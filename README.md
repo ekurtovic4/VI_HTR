@@ -1,2 +1,1 @@
-# VI_HTR
-Repozitorij za projekat
+Repozitorij za HTR projekat iz predmeta Vještačka inteligencija
