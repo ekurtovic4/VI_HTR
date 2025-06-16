@@ -1,6 +1,6 @@
 1) Klonirati VI_HTR repozitorij
 
-2) U raw folder dodati dataset (čitav labels_w odnosno labels_l folder)
+2) U root-u kreirati raw folder i u njega dodati dataset (čitav labels_w odnosno labels_l folder)
 
 3) U terminalu: python -m venv .venv
 
