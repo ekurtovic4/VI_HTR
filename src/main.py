@@ -26,7 +26,6 @@ from data.generator import DataGenerator, Tokenizer
 from data.reader import Dataset
 
 from network.model import HTRModel
-from language.model import LanguageModel
 
 
 if __name__ == "__main__":
@@ -146,54 +145,7 @@ if __name__ == "__main__":
         model.compile(learning_rate=0.001)
         model.load_checkpoint(target=target_path)
 
-        if args.kaldi_assets:
-            predicts, _ = model.predict(x=dtgen.next_test_batch(), steps=dtgen.steps['test'], ctc_decode=False)
-
-            lm = LanguageModel(output_path, args.N)
-            lm.generate_kaldi_assets(dtgen, predicts)
-
-        elif args.lm:
-            lm = LanguageModel(output_path, args.N)
-            ground_truth = [x.decode() for x in dtgen.dataset['test']['gt']]
-
-            start_time = datetime.datetime.now()
-
-            predicts, _ = model.predict(x=dtgen.next_test_batch(), steps=dtgen.steps['test'], ctc_decode=False)
-            lm.generate_kaldi_assets(dtgen, predicts)
-
-            lm.kaldi(predict=False)
-            predicts = lm.kaldi(predict=True)
-
-            total_time = datetime.datetime.now() - start_time
-
-            with open(os.path.join(output_path, "predict_kaldi.txt"), "w") as lg:
-                for pd, gt in zip(predicts, ground_truth):
-                    lg.write(f"TE_L {gt}\nTE_P {pd}\n")
-
-            evaluate = evaluation.ocr_metrics(predicts=predicts,
-                                              ground_truth=ground_truth,
-                                              norm_accentuation=args.norm_accentuation,
-                                              norm_punctuation=args.norm_punctuation)
-
-            e_corpus = "\n".join([
-                f"Total test images:    {dtgen.size['test']}",
-                f"Total time:           {total_time}",
-                f"Time per item:        {total_time / dtgen.size['test']}\n",
-                "Metrics:",
-                f"Character Error Rate: {evaluate[0]:.8f}",
-                f"Word Error Rate:      {evaluate[1]:.8f}",
-                f"Sequence Error Rate:  {evaluate[2]:.8f}"
-            ])
-
-            sufix = ("_norm" if args.norm_accentuation or args.norm_punctuation else "") + \
-                    ("_accentuation" if args.norm_accentuation else "") + \
-                    ("_punctuation" if args.norm_punctuation else "")
-
-            with open(os.path.join(output_path, f"evaluate_kaldi{sufix}.txt"), "w") as lg:
-                lg.write(e_corpus)
-                print(e_corpus)
-
-        elif args.train:
+        if args.train:
             model.summary(output_path, "summary.txt")
             callbacks = model.get_callbacks(logdir=output_path, checkpoint=target_path, verbose=1)
 
