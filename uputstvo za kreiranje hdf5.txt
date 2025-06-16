@@ -7,11 +7,13 @@
 4) U terminalu: source .venv/Scripts/activate 
    - u originalnom tutorijalu je ovdje source .venv/bin/activate, kod mene (Windows 10) je trebalo Scripts umjesto bin
 
-5) U terminalu: cd src
+5) U terminalu: pip install -r requirements.txt
 
-6) U terminalu: python main.py --source=<DATASET_NAME> --transform
+6) U terminalu: cd src
+
+7) U terminalu: python main.py --source=<DATASET_NAME> --transform
    - umjesto <DATASET_NAME> će biti ili labels_w ili labels_l
 
-7) Nakon ovoga bi se u root-u trebao kreirati data folder, u kojem se nalazi odgovarajući hdf5 file
+8) Nakon ovoga bi se u root-u trebao kreirati data folder, u kojem se nalazi odgovarajući hdf5 file
 
-8) Nakon toga je potrebno upload-ati čitave foldere data i src u Google Drive folder za projekat, odnosno VI HTR datasets spojeno/[jedno od print, cursive ili mix]
+9) Nakon toga je potrebno upload-ati čitave foldere data i src u Google Drive folder za projekat, odnosno VI HTR datasets spojeno/[jedno od print, cursive ili mix]
