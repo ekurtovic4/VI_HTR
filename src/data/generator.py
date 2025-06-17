@@ -11,9 +11,15 @@ import data.preproc as pp
 class DataGenerator():
     """Generator class with data streaming"""
 
-    def __init__(self, source, batch_size, charset, max_text_length, predict=False, stream=False):
+    def __init__(self, source, batch_size, charset, max_text_length, max_time_steps=256, predict=False, stream=False):
         self.tokenizer = Tokenizer(charset, max_text_length)
         self.batch_size = batch_size
+        self.max_time_steps = max_time_steps
+
+        if max_text_length > max_time_steps:
+            print(f"Warning: max_text_length ({max_text_length}) > max_time_steps ({max_time_steps}). "
+                  f"This will cause CTC errors. Setting max_text_length = max_time_steps.")
+            self.tokenizer.maxlen = max_time_steps
 
         self.size = dict()
         self.steps = dict()
@@ -67,8 +73,23 @@ class DataGenerator():
                                       width_shift_range=0.05)
             x_train = pp.normalization(x_train)
 
-            y_train = [self.tokenizer.encode(y) for y in self.dataset['train']['gt'][index:until]]
-            y_train = [np.pad(y, (0, self.tokenizer.maxlen - len(y))) for y in y_train]
+            y_train_raw = self.dataset['train']['gt'][index:until]
+
+            # Check max label length in this batch
+            max_label_len = max(len(y) for y in y_train_raw)
+            if max_label_len > self.tokenizer.maxlen:
+                print(f"Warning: Found label length {max_label_len} > tokenizer maxlen {self.tokenizer.maxlen}. "
+                      "Labels will be truncated, which can cause errors with CTC loss.")
+
+            # Encode and pad labels (truncate if too long)
+            y_train = []
+            for y in y_train_raw:
+                encoded = self.tokenizer.encode(y)
+                if len(encoded) > self.tokenizer.maxlen:
+                    encoded = encoded[:self.tokenizer.maxlen]  # truncate to maxlen
+                padded = np.pad(encoded, (0, self.tokenizer.maxlen - len(encoded)))
+                y_train.append(padded)
+
             y_train = np.asarray(y_train, dtype=np.int16)
 
             yield (x_train, y_train)
@@ -89,8 +110,22 @@ class DataGenerator():
             x_valid = self.dataset['valid']['dt'][index:until]
             x_valid = pp.normalization(x_valid)
 
-            y_valid = [self.tokenizer.encode(y) for y in self.dataset['valid']['gt'][index:until]]
-            y_valid = [np.pad(y, (0, self.tokenizer.maxlen - len(y))) for y in y_valid]
+            y_valid_raw = self.dataset['valid']['gt'][index:until]
+
+            # Check max label length
+            max_label_len = max(len(y) for y in y_valid_raw)
+            if max_label_len > self.tokenizer.maxlen:
+                print(f"Warning: Found validation label length {max_label_len} > tokenizer maxlen {self.tokenizer.maxlen}. "
+                      "Labels will be truncated.")
+
+            y_valid = []
+            for y in y_valid_raw:
+                encoded = self.tokenizer.encode(y)
+                if len(encoded) > self.tokenizer.maxlen:
+                    encoded = encoded[:self.tokenizer.maxlen]
+                padded = np.pad(encoded, (0, self.tokenizer.maxlen - len(encoded)))
+                y_valid.append(padded)
+
             y_valid = np.asarray(y_valid, dtype=np.int16)
 
             yield (x_valid, y_valid)
