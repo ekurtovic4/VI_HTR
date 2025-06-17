@@ -2,7 +2,7 @@ Napomena: vjerovatno će biti potrebna starija verzija Python-a, radi s 3.11.9
 
 1) Klonirati VI_HTR repozitorij
 
-2) U root-u kreirati raw folder i u njega dodati dataset (čitav labels_w odnosno labels_l folder)
+2) U root-u kreirati raw folder i u njega dodati dataset (čitav labels_w ili labels_l ili labels_l_m folder)
 
 3) U terminalu: python -m venv .venv
 
