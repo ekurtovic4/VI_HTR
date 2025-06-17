@@ -146,3 +146,30 @@ class Dataset():
                 dataset[data_type]["gt"].append(split[-1])
 
         return dataset
+    
+    def _labels_l_m(self):
+        """VI_HTR dataset reader for lines (modified line extraction function)"""
+        pt_path = self.source
+
+        paths = {
+            "train": open(os.path.join(pt_path, "trainset.txt"), encoding="utf8")
+            .read()
+            .splitlines(),
+            "valid": open(os.path.join(pt_path, "validset.txt"), encoding="utf8")
+            .read()
+            .splitlines(),
+            "test": open(os.path.join(pt_path, "testset.txt"), encoding="utf8")
+            .read()
+            .splitlines(),
+        }
+
+        img_path = os.path.join(self.source, "line")
+        dataset = self._init_dataset()
+
+        for data_type, lines in paths.items():
+            for line in lines:
+                split = line.removesuffix("\n").split("|")
+                dataset[data_type]["dt"].append(os.path.join(img_path, f"{split[0]}"))
+                dataset[data_type]["gt"].append(split[-1])
+
+        return dataset

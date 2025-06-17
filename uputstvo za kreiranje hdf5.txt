@@ -14,7 +14,7 @@ Napomena: vjerovatno će biti potrebna starija verzija Python-a, radi s 3.11.9
 6) U terminalu: cd src
 
 7) U terminalu: python main.py --source=<DATASET_NAME> --transform
-   - umjesto <DATASET_NAME> će biti ili labels_w ili labels_l
+   - umjesto <DATASET_NAME> će biti ili labels_w ili labels_l ili labels_l_m
 
 8) Nakon ovoga bi se u root-u trebao kreirati data folder, u kojem se nalazi odgovarajući hdf5 file
 
