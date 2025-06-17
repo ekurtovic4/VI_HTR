@@ -207,9 +207,6 @@ class HTRModel:
                 verbose=0,
                 steps=1,
                 callbacks=None,
-                max_queue_size=10,
-                workers=1,
-                use_multiprocessing=False,
                 ctc_decode=True):
         """
         Model predicting on data yielded (predict function has support to generator).
@@ -225,8 +222,7 @@ class HTRModel:
             print("Model Predict")
 
         out = self.model.predict(x=x, batch_size=batch_size, verbose=verbose, steps=steps,
-                                 callbacks=callbacks, max_queue_size=max_queue_size,
-                                 workers=workers, use_multiprocessing=use_multiprocessing)
+                                 callbacks=callbacks)
 
         if not ctc_decode:
             return np.log(out.clip(min=1e-8)), []

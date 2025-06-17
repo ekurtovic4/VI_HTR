@@ -112,7 +112,7 @@ class DataGenerator():
             x_test = self.dataset['test']['dt'][index:until]
             x_test = pp.normalization(x_test)
 
-            yield x_test
+            yield (x_test,)
 
 
 class Tokenizer():
